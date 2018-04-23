@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/mysqlbackup_qt/icons">
+        <file>Icons/Action-file-new-icon.png</file>
+        <file>Icons/Windows-Close-Program-icon.png</file>
+        <file>Icons/Actions-document-save-all-icon.png</file>
+        <file>Icons/Actions-document-save-as-icon.png</file>
+        <file>Icons/Actions-document-save-icon.png</file>
+        <file>Icons/open-file-icon.png</file>
+        <file>Icons/exclamation-red-icon.png</file>
+    </qresource>
+</RCC>

@@ -743,16 +743,6 @@
           </property>
          </widget>
         </widget>
-        <widget class="QListView" name="lvOutput">
-         <property name="geometry">
-          <rect>
-           <x>610</x>
-           <y>420</y>
-           <width>551</width>
-           <height>141</height>
-          </rect>
-         </property>
-        </widget>
         <widget class="QPushButton" name="buTestConfig">
          <property name="geometry">
           <rect>
@@ -764,6 +754,16 @@
          </property>
          <property name="text">
           <string>Test Configuration</string>
+         </property>
+        </widget>
+        <widget class="QListWidget" name="lwOutput">
+         <property name="geometry">
+          <rect>
+           <x>610</x>
+           <y>420</y>
+           <width>551</width>
+           <height>141</height>
+          </rect>
          </property>
         </widget>
        </widget>

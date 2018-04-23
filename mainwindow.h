@@ -4,7 +4,10 @@
 #include <QMainWindow>
 #include <QByteArray>
 #include <QCryptographicHash>
+#include <QDate>
+#include <QDateTime>
 #include <QDir>
+#include <QElapsedTimer>
 #include <QFileDialog>
 #include <QLabel>
 #include <QMessageBox>
@@ -15,6 +18,8 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSysInfo>
+#include <QTime>
+#include <Qt>
 
 #include "libraries/simplecrypt/simplecrypt.h"
 #include <quazip5/JlCompress.h>

@@ -38,7 +38,7 @@ DISTNAME      = mysqlbackup1.0.1
 DISTDIR = /home/local/BAPM.COM/csdurbin/Projects/C++/MySQLBackup_QT/.tmp/mysqlbackup1.0.1
 LINK          = g++
 LFLAGS        = -Wl,-O1
-LIBS          = $(SUBLIBS) -lquazip5 -lz -lSmtpMime -lQt5Widgets -lQt5Gui -lQt5Sql -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -lquazip5 -lz -lssl -lcrypto -lQt5Widgets -lQt5Gui -lQt5Sql -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -52,10 +52,16 @@ OBJECTS_DIR   = ./
 
 SOURCES       = main.cpp \
 		mainwindow.cpp \
-		simplecrypt.cpp qrc_mysqlbackup_qt.cpp \
+		libraries/smtp/base64.cpp \
+		libraries/smtp/CSmtp.cpp \
+		libraries/smtp/md5.cpp \
+		libraries/simplecrypt/simplecrypt.cpp qrc_mysqlbackup_qt.cpp \
 		moc_mainwindow.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
+		base64.o \
+		CSmtp.o \
+		md5.o \
 		simplecrypt.o \
 		qrc_mysqlbackup_qt.o \
 		moc_mainwindow.o
@@ -243,9 +249,15 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib64/qt5/mkspecs/features/yacc.prf \
 		/usr/lib64/qt5/mkspecs/features/lex.prf \
 		MySQLBackup_QT.pro mainwindow.h \
-		simplecrypt.h main.cpp \
+		libraries/smtp/base64.h \
+		libraries/smtp/CSmtp.h \
+		libraries/smtp/md5.h \
+		libraries/simplecrypt/simplecrypt.h main.cpp \
 		mainwindow.cpp \
-		simplecrypt.cpp
+		libraries/smtp/base64.cpp \
+		libraries/smtp/CSmtp.cpp \
+		libraries/smtp/md5.cpp \
+		libraries/simplecrypt/simplecrypt.cpp
 QMAKE_TARGET  = mysqlbackup
 DESTDIR       = 
 TARGET        = mysqlbackup
@@ -652,8 +664,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents mysqlbackup_qt.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib64/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents mainwindow.h simplecrypt.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp mainwindow.cpp simplecrypt.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents mainwindow.h libraries/smtp/base64.h libraries/smtp/CSmtp.h libraries/smtp/md5.h libraries/simplecrypt/simplecrypt.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp mainwindow.cpp libraries/smtp/base64.cpp libraries/smtp/CSmtp.cpp libraries/smtp/md5.cpp libraries/simplecrypt/simplecrypt.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents mainwindow.ui $(DISTDIR)/
 
 
@@ -685,6 +697,7 @@ qrc_mysqlbackup_qt.cpp: mysqlbackup_qt.qrc \
 		/usr/lib64/qt5/bin/rcc \
 		Icons/Actions-document-save-all-icon.png \
 		Icons/Actions-document-save-icon.png \
+		Icons/exclamation-red-icon.png \
 		Icons/Windows-Close-Program-icon.png \
 		Icons/Action-file-new-icon.png \
 		Icons/Actions-document-save-as-icon.png \
@@ -700,14 +713,9 @@ moc_predefs.h: /usr/lib64/qt5/mkspecs/features/data/dummy.cpp
 compiler_moc_header_make_all: moc_mainwindow.cpp
 compiler_moc_header_clean:
 	-$(DEL_FILE) moc_mainwindow.cpp
-moc_mainwindow.cpp: simplecrypt.h \
-		libraries/smtp/mimemessage.h \
-		libraries/smtp/smtpmime_global.h \
-		libraries/smtp/mimepart.h \
-		libraries/smtp/mimemultipart.h \
-		libraries/smtp/emailaddress.h \
-		libraries/smtp/mimetext.h \
-		libraries/smtp/smtpclient.h \
+moc_mainwindow.cpp: libraries/simplecrypt/simplecrypt.h \
+		libraries/smtp/CSmtp.h \
+		libraries/smtp/md5.h \
 		mainwindow.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
@@ -733,30 +741,31 @@ compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_heade
 ####### Compile
 
 main.o: main.cpp mainwindow.h \
-		simplecrypt.h \
-		libraries/smtp/mimemessage.h \
-		libraries/smtp/smtpmime_global.h \
-		libraries/smtp/mimepart.h \
-		libraries/smtp/mimemultipart.h \
-		libraries/smtp/emailaddress.h \
-		libraries/smtp/mimetext.h \
-		libraries/smtp/smtpclient.h
+		libraries/simplecrypt/simplecrypt.h \
+		libraries/smtp/CSmtp.h \
+		libraries/smtp/md5.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 mainwindow.o: mainwindow.cpp mainwindow.h \
-		simplecrypt.h \
-		libraries/smtp/mimemessage.h \
-		libraries/smtp/smtpmime_global.h \
-		libraries/smtp/mimepart.h \
-		libraries/smtp/mimemultipart.h \
-		libraries/smtp/emailaddress.h \
-		libraries/smtp/mimetext.h \
-		libraries/smtp/smtpclient.h \
+		libraries/simplecrypt/simplecrypt.h \
+		libraries/smtp/CSmtp.h \
+		libraries/smtp/md5.h \
 		ui_mainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
 
-simplecrypt.o: simplecrypt.cpp simplecrypt.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o simplecrypt.o simplecrypt.cpp
+base64.o: libraries/smtp/base64.cpp libraries/smtp/base64.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o base64.o libraries/smtp/base64.cpp
+
+CSmtp.o: libraries/smtp/CSmtp.cpp libraries/smtp/CSmtp.h \
+		libraries/smtp/md5.h \
+		libraries/smtp/base64.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o CSmtp.o libraries/smtp/CSmtp.cpp
+
+md5.o: libraries/smtp/md5.cpp libraries/smtp/md5.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o md5.o libraries/smtp/md5.cpp
+
+simplecrypt.o: libraries/simplecrypt/simplecrypt.cpp libraries/simplecrypt/simplecrypt.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o simplecrypt.o libraries/simplecrypt/simplecrypt.cpp
 
 qrc_mysqlbackup_qt.o: qrc_mysqlbackup_qt.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_mysqlbackup_qt.o qrc_mysqlbackup_qt.cpp

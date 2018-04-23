@@ -443,10 +443,29 @@ void MainWindow::on_buTestConfig_clicked() {
     if(!QDir(dir.absolutePath() + "/tmp").exists()) {
         if(!QDir().mkdir(dir.absolutePath() + "/tmp")) {
             QMessageBox::critical(this,"Error","Unable to create default tmp directory!");
+            return;
+        }
+    }
+    dir = ui->tbMySQLBackupLocation->text();
+    // Try to create the backup directory
+    if(!dir.exists()) {
+        if(!QDir().mkdir(dir.absolutePath())) {
+            QMessageBox::critical(this,"Error","Unable to create backup directory!");
+            return;
         }
     }
 
 
+    // Let's start the backup
+    QFileInfo file(ui->tbMySQLDumpLocation->text());
+    if(!file.exists()) {
+        QMessageBox::critical(this, "Error", "Cannot access mysqldump, please reset the path.", QMessageBox::Ok);
+        ui->tbMySQLDumpLocation->setFocus();
+        return;
+    }
+    QElapsedTimer timer;
+    timer.start();
+    ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Begin backup");
 
 
 
@@ -454,6 +473,11 @@ void MainWindow::on_buTestConfig_clicked() {
 
 
 
+
+
+
+    ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " End backup");
+    ui->lwOutput->addItem("Total Backup Time: " + QString::number(timer.elapsed()/1000) + " seconds.");
 }
 
 /**********************************************************************

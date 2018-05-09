@@ -4,13 +4,17 @@
 #include <QMainWindow>
 #include <QByteArray>
 #include <QCryptographicHash>
+#include <qtconcurrentrun.h>
 #include <QDate>
 #include <QDateTime>
+#include <QDebug>
 #include <QDir>
 #include <QElapsedTimer>
 #include <QFileDialog>
+#include <QFuture>
 #include <QLabel>
 #include <QMessageBox>
+#include <QProcess>
 #include <QProgressBar>
 #include <QSettings>
 #include <QString>
@@ -18,12 +22,13 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSysInfo>
+#include <QThread>
 #include <QTime>
 #include <Qt>
 
 #include "libraries/simplecrypt/simplecrypt.h"
-#include <quazip5/JlCompress.h>
 #include "libraries/smtp/CSmtp.h"
+#include <quazip5/JlCompress.h>
 
 namespace Ui {
 class MainWindow;
@@ -70,6 +75,8 @@ private slots:
     void on_buTestMail_clicked();
 
     bool errorProvider(QString groupname);
+
+    static int backupThread(QString command);
 
 
 private:

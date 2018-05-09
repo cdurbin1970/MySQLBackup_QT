@@ -5,6 +5,10 @@
 /*
     Project depends on QuaZip
 
+    Simplecrypt
+    libraries/simplecrypt
+    https://wiki.qt.io/Simple_encryption_with_SimpleCrypt
+
     SMTP Client with SSL/TLS
     libraries/smtp in source tree
     https://www.codeproject.com/Articles/98355/SMTP-Client-with-SSL-TLS
@@ -231,14 +235,14 @@ bool MainWindow::SaveConfig(QString fileName) {
     settings.beginGroup("databases");
         QString selected;
         QString notselected;
-        for(int i = 0; i < ui->clbDatabases->count(); ++i) {
+        for(int x = 0; x < ui->clbDatabases->count(); ++x) {
             // May be a better way to do this?
-            if(ui->clbDatabases->item(i)->isSelected()) {
-                selected += ui->clbDatabases->item(i)->text();
+            if(ui->clbDatabases->item(x)->isSelected()) {
+                selected += ui->clbDatabases->item(x)->text();
                 selected += ",";
             }
             else {
-                notselected += ui->clbDatabases->item(i)->text();
+                notselected += ui->clbDatabases->item(x)->text();
                 notselected += ",";
             }
         }
@@ -336,13 +340,13 @@ void MainWindow::on_actionOpen_triggered() {
 
         ui->clbDatabases->clear();
         QStringList selist = settings.value("databases/selected").toString().split(',');
-        for (int i = 0; i < selist.size(); ++i) {
-            ui->clbDatabases->addItem(selist.value(i));
-            ui->clbDatabases->item(i)->setSelected(true);
+        for (int x = 0; x < selist.size(); ++x) {
+            ui->clbDatabases->addItem(selist.value(x));
+            ui->clbDatabases->item(x)->setSelected(true);
         }
         QStringList uslist = settings.value("databases/notselected").toString().split(',');
-        for (int i = 0; i < uslist.size(); ++i) {
-            ui->clbDatabases->addItem(uslist.value(i));
+        for (int x = 0; x < uslist.size(); ++x) {
+            ui->clbDatabases->addItem(uslist.value(x));
         }
         if(settings.value("smtpserver/sendmail") == "true") {
             ui->cbSendEmail->setChecked(true);
@@ -454,8 +458,6 @@ void MainWindow::on_buTestConfig_clicked() {
             return;
         }
     }
-
-
     // Let's start the backup
     QFileInfo file(ui->tbMySQLDumpLocation->text());
     if(!file.exists()) {
@@ -463,21 +465,156 @@ void MainWindow::on_buTestConfig_clicked() {
         ui->tbMySQLDumpLocation->setFocus();
         return;
     }
+    ui->lwOutput->clear();
     QElapsedTimer timer;
     timer.start();
-    ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Begin backup");
-
-
-
-
-
-
-
-
-
-
+    QFuture<int> bt;
+    // Send the options in a QString to the backup function
+    QString command;
+    QString file_prepend = QDateTime::currentDateTime().toString("yyyy_MM_dd_HH_mm_ss_");
+    statusProgressBar->setMaximum(0);
+    ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Begin backup");    
+    // Iterate through each item in the clbDatabases list box and see if it is  selected.
+    for (int x=0;x < ui->clbDatabases->count(); ++x) {
+        if (ui->clbDatabases->item(x)->isSelected()) {
+           // It is selected
+           command.clear();
+           command = ui->tbMySQLDumpLocation->text();
+           command.append(" --host=" + ui->tbMySQLHostName->text());
+           command.append(" --port=" + ui->tbMySQLPort->text());
+           command.append(" --user=" + ui->tbMySQLUserName->text());
+           command.append(" --password=" + ui->tbMySQLPassword->text());
+           command.append(" --result-file=tmp/" + file_prepend + ui->clbDatabases->item(x)->text() + ".sql");
+           command.append(" --databases " + ui->clbDatabases->item(x)->text());
+           command.append(" " + ui->tbAdditionalOptions->text());
+           // Start the thread and wait for it to return
+           bt = QtConcurrent::run(backupThread, QString(command));
+           while (bt.isRunning()) {
+               // While we're waiting, keep proccessing events
+              QApplication::processEvents();
+           }
+           // Results and what to do next
+            if(bt.result()==0) {
+                ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Table " + ui->clbDatabases->item(x)->text() + " dumped successfully");
+                // Check to see if we need to zip the file
+                if(ui->cbCompressBackup->isChecked()) {
+                    if(JlCompress::compressFile("tmp/" + file_prepend + ui->clbDatabases->item(x)->text() + ".sql.zip","tmp/" + file_prepend + ui->clbDatabases->item(x)->text() + ".sql")) {
+                        ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " File " + ui->clbDatabases->item(x)->text() + " zipped successfully");
+                    }
+                    else {
+                        ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " File " + ui->clbDatabases->item(x)->text() + " failed to zip");
+                        QMessageBox::critical(this,"Error","Unable to zip file correctly. Backup was aborted!");
+                        ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Backup Failed");
+                        ui->lwOutput->addItem("Total Backup Time: " + QString::number(timer.elapsed()/1000) + " seconds.");
+                        statusProgressBar->setMaximum(1);
+                        return;
+                    }
+                }
+                // We're here, so file dumped correctly and possibly zipped correctly. Now move them to the backup directory.
+                if(ui->cbUseDBDirs->isChecked()) {
+                    // We're using directories based on the database name
+                    // First, try to create the directory if it does not exist
+                    dir = ui->tbMySQLBackupLocation->text() + "/" + ui->clbDatabases->item(x)->text();
+                    if(!dir.exists()) {
+                        if(!QDir().mkdir(dir.absolutePath())) {
+                            QMessageBox::critical(this,"Error","Unable to create backup directory!");
+                            return;
+                        }
+                    }
+                }
+                // Move the dump file(s) to the final directory. Do we keep the original dump file?
+                if(ui->cbRemoveSQLDumpFile->isChecked()) {
+                    if(!QFile::remove("tmp/" + file_prepend + ui->clbDatabases->item(x)->text() + ".sql")) {
+                        ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Failed to delete file " + ui->clbDatabases->item(x)->text());
+                        QMessageBox::critical(this,"Error","Unable to delete file. Backup was aborted!");
+                        ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Backup Failed");
+                        ui->lwOutput->addItem("Total Backup Time: " + QString::number(timer.elapsed()/1000) + " seconds.");
+                        statusProgressBar->setMaximum(1);
+                        return;
+                    }
+                }
+                // Move the .sql and the .zip file(if they exist)
+                QString destfile = "";
+                if(QFile::exists("tmp/" + file_prepend + ui->clbDatabases->item(x)->text() + ".sql")) {
+                    if(ui->cbUseDBDirs->isChecked()) {
+                        destfile = ui->tbMySQLBackupLocation->text() + "/" + ui->clbDatabases->item(x)->text() + "/" + file_prepend + ui->clbDatabases->item(x)->text() + ".sql";
+                    }
+                    else {
+                        destfile = ui->tbMySQLBackupLocation->text() + "/" + file_prepend + ui->clbDatabases->item(x)->text() + ".sql";
+                    }
+                    if(!QFile::rename("tmp/" + file_prepend + ui->clbDatabases->item(x)->text() + ".sql", destfile)) {
+                        ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Failed to move .sql file " + ui->clbDatabases->item(x)->text());
+                        QMessageBox::critical(this,"Error","Unable to move file. Backup was aborted!");
+                        ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Backup Failed");
+                        ui->lwOutput->addItem("Total Backup Time: " + QString::number(timer.elapsed()/1000) + " seconds.");
+                        statusProgressBar->setMaximum(1);
+                        return;
+                    }
+                    else {
+                        ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " .sql file " + ui->clbDatabases->item(x)->text() + " moved successfully");
+                    }
+                }
+                if(QFile::exists("tmp/" + file_prepend + ui->clbDatabases->item(x)->text() + ".sql.zip")) {
+                    if(ui->cbUseDBDirs->isChecked()) {
+                        destfile = ui->tbMySQLBackupLocation->text() + "/" + ui->clbDatabases->item(x)->text() + "/" + file_prepend + ui->clbDatabases->item(x)->text() + ".sql.zip";
+                    }
+                    else {
+                        destfile = ui->tbMySQLBackupLocation->text() + "/" + file_prepend + ui->clbDatabases->item(x)->text() + ".sql.zip";
+                    }
+                    if(!QFile::rename("tmp/" + file_prepend + ui->clbDatabases->item(x)->text() + ".sql.zip", destfile)) {
+                        ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Failed to move .zip file " + ui->clbDatabases->item(x)->text());
+                        QMessageBox::critical(this,"Error","Unable to move file. Backup was aborted!");
+                        ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Backup Failed");
+                        ui->lwOutput->addItem("Total Backup Time: " + QString::number(timer.elapsed()/1000) + " seconds.");
+                        statusProgressBar->setMaximum(1);
+                        return;
+                    }
+                    else {
+                        ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " .zip file " + ui->clbDatabases->item(x)->text() + " moved successfully");
+                    }
+                }
+            }
+            else if(bt.result()==1) {
+                ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Mysqldump did not start");
+            }
+            else if(bt.result()==2) {
+                ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Mysqldump did not end before timeout");
+            }
+            else if(bt.result()==3) {
+                ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Mysqldump error, please check log");
+            }
+        }
+    }
     ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " End backup");
     ui->lwOutput->addItem("Total Backup Time: " + QString::number(timer.elapsed()/1000) + " seconds.");
+    statusProgressBar->setMaximum(1);
+
+}
+
+/**********************************************************************
+    Backup Thread
+**********************************************************************/
+int MainWindow::backupThread(QString command) {
+    QProcess backup;
+    backup.start(command);
+    if(!backup.waitForStarted()) {
+        return 1;
+    }
+    if (!backup.waitForFinished()) {
+        return 2;
+    }
+    QString p_stderr = backup.readAllStandardError();
+    if (p_stderr != "") {
+        QString filename="backup_error.log";
+        QFile file(filename);
+        if ( file.open(QIODevice::ReadWrite) ) {
+            QTextStream stream(&file);
+            stream << p_stderr << endl;
+        }
+        return 3;
+    }
+    //backup
+return 0;
 }
 
 /**********************************************************************
@@ -544,47 +681,47 @@ bool MainWindow::errorProvider(QString groupname) {
     QList<QLineEdit*> line_edits = centralWidget()->findChildren<QLineEdit*>();
     // Iterate through the list and check to see if the mandatory property is the same as the groupname that is sent.
     // If so, change the stylesheet, display the icon.
-    for(int i = 0; i < line_edits.count(); ++i) {
-        if (groupname == "clear" && line_edits[i]->property("HasError") == true) {
-            line_edits[i]->setStyleSheet("");
+    for(int x = 0; x < line_edits.count(); ++x) {
+        if (groupname == "clear" && line_edits[x]->property("HasError") == true) {
+            line_edits[x]->setStyleSheet("");
             // Delete the error symbol from the form
-            centralWidget()->findChild<QLabel *>(line_edits[i]->property("ErrorWidget").toString())->deleteLater();
-            line_edits[i]->setProperty("HasError",false);
+            centralWidget()->findChild<QLabel *>(line_edits[x]->property("ErrorWidget").toString())->deleteLater();
+            line_edits[x]->setProperty("HasError",false);
         }
-        else if(line_edits[i]->isEnabled() && line_edits[i]->property("mandatory").isValid() && (line_edits[i]->property("mandatory") == groupname || groupname == "all")) {
-            if(line_edits[i]->text() == "" || line_edits[i]->text().isNull()) {
-                if(line_edits[i]->property("HasError") == false || line_edits[i]->property("HasError").isNull()) {
-                    line_edits[i]->setStyleSheet("color: #FF0000;");
+        else if(line_edits[x]->isEnabled() && line_edits[x]->property("mandatory").isValid() && (line_edits[x]->property("mandatory") == groupname || groupname == "all")) {
+            if(line_edits[x]->text() == "" || line_edits[x]->text().isNull()) {
+                if(line_edits[x]->property("HasError") == false || line_edits[x]->property("HasError").isNull()) {
+                    line_edits[x]->setStyleSheet("color: #FF0000;");
                     QPixmap image(":/mysqlbackup_qt/icons/Icons/exclamation-red-icon.png");
                     QLabel *errorLabel = new QLabel();
-                    errorLabel->setObjectName(line_edits[i]->objectName() + "_errorlabel");
+                    errorLabel->setObjectName(line_edits[x]->objectName() + "_errorlabel");
                     errorLabel->setPixmap(image);
-                    errorLabel->setGeometry(line_edits[i]->x() + line_edits[i]->width() + 5,line_edits[i]->y() + 5,16,16);
-                    errorLabel->setParent(line_edits[i]->parentWidget());
+                    errorLabel->setGeometry(line_edits[x]->x() + line_edits[x]->width() + 5,line_edits[x]->y() + 5,16,16);
+                    errorLabel->setParent(line_edits[x]->parentWidget());
                     errorLabel->show();
-                    line_edits[i]->setProperty("ErrorWidget",errorLabel->objectName());
-                    line_edits[i]->setProperty("HasError",true);
+                    line_edits[x]->setProperty("ErrorWidget",errorLabel->objectName());
+                    line_edits[x]->setProperty("HasError",true);
                     // Looks like at least one item failed so set error to true
                     error = true;
                     // Is first set to default? If so, assign it the current value
                     if (first == 9999) {
-                        first = i;
+                        first = x;
                     }
                 }
-                else if(line_edits[i]->property("HasError") == true) {
+                else if(line_edits[x]->property("HasError") == true) {
                     // So we've already processed these lineedits and at least one is still in error
                     error = true;
                     // Is first set to default? If so, assign it the current value
                     if (first == 9999) {
-                        first = i;
+                        first = x;
                     }
                 }
             }
-            else if(line_edits[i]->property("HasError").toBool()) {
-                    line_edits[i]->setStyleSheet("");
+            else if(line_edits[x]->property("HasError").toBool()) {
+                    line_edits[x]->setStyleSheet("");
                     // Delete the error symbol from the form
-                    centralWidget()->findChild<QLabel *>(line_edits[i]->property("ErrorWidget").toString())->deleteLater();
-                    line_edits[i]->setProperty("HasError",false);
+                    centralWidget()->findChild<QLabel *>(line_edits[x]->property("ErrorWidget").toString())->deleteLater();
+                    line_edits[x]->setProperty("HasError",false);
             }
         }
     }

@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
     a.setApplicationVersion(VERSION_STRING);
     MainWindow w;
     QFileInfo info(argv[0]);
-    w.setWindowTitle("MySQL Backup v" + QString::fromStdString(VERSION_STRING) + " build " + info.created().toString("MMddyy"));
+    w.setWindowTitle("MySQL Backup v" + QString::fromStdString(VERSION_STRING) + " build " + info.birthTime().toString("MMddyy"));
     w.show();
     return a.exec();
 }

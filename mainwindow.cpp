@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     // create objects for the labels and progress bar
     statusLabelOS = new QLabel(this);
     statusLabelConfig = new QLabel(this);
@@ -49,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
         statusLabelOS->setText("OS: " + info.prettyProductName());
         ui->rbLinux->setChecked(true);
     }
+    modified = false;
     QCoreApplication::setOrganizationName("CDurbin");
     QCoreApplication::setOrganizationDomain("cdcomputersys.com");
     QCoreApplication::setApplicationName("MySQL Backup");
@@ -69,20 +71,17 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->tbSMTPPassword->setProperty("mandatory","smtp");
     ui->tbSMTPEMailAddress->setProperty("mandatory","smtp");
     ui->tbSMTPFromAddress->setProperty("mandatory","smtp");
-
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete ui;
 }
 
 /**********************************************************************
     Get Database Names
 **********************************************************************/
-void MainWindow::on_buGetDatabaseNames_clicked() {    
-
-    if(errorProvider("mysql")){
+void MainWindow::on_buGetDatabaseNames_clicked() {
+    if(errorProvider("mysql")) {
         QMessageBox::critical(this, "Error", "Please enter the MySQL server information or Open a config file before clicking on Get Database Names.", QMessageBox::Ok);
         return;
     }
@@ -105,7 +104,8 @@ void MainWindow::on_buGetDatabaseNames_clicked() {
         ui->clbDatabases->addItem(query.value(0).toString());
     }
     // Close the database connection
-    db.close();
+    db.close();    
+    modified = true;
 }
 
 /**********************************************************************
@@ -118,22 +118,47 @@ void MainWindow::on_cbSelectDatabases_clicked() {
     else {
         ui->clbDatabases->clearSelection();
     }
+    modified = true;
 }
 
 /**********************************************************************
     Exit the Application
 **********************************************************************/
 void MainWindow::on_actionQuit_triggered() {
-    if(QMessageBox::question(this, "Exit Application", "Exit MySQL Backup?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes) {
-            QApplication::quit();
+    if(detectChanges()) {
+        if(QMessageBox::question(this, "Exit Application", "You have unsaved chages, continue to exit?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
+                return;
+        }
     }
+    else {
+        if(QMessageBox::question(this, "Exit Application", "Exit MySQL Backup?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
+                return;
+        }
+    }
+    QApplication::quit();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    if(detectChanges()) {
+        if(QMessageBox::question(this, "Exit Application", "You have unsaved chages, continue to exit?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
+                event->ignore();
+        }
+    }
+    else {
+        if(QMessageBox::question(this, "Exit Application", "Exit MySQL Backup?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
+                event->ignore();
+        }
+    }
+    event->accept();
 }
 
 /**********************************************************************
     Find MySQL Dump
 **********************************************************************/
 void MainWindow::on_buMySQLDumpLocation_clicked() {
-   ui->tbMySQLDumpLocation->setText(QFileDialog::getOpenFileName(this,tr("Find mysqldump"), "/usr/bin", tr("MySQL Dump (mysqldump)")));
+
+  ui->tbMySQLDumpLocation->setText(QFileDialog::getOpenFileName(this,"Find mysqldump", "/usr/bin", "MySQL Dump (mysqldump)"));
+   ui->tbMySQLDumpLocation->setModified(true);
 }
 
 /**********************************************************************
@@ -141,10 +166,11 @@ void MainWindow::on_buMySQLDumpLocation_clicked() {
 **********************************************************************/
 void MainWindow::on_buMySQLBackupSaveLocation_clicked() {
     QDir dir;
-    QString directory = QFileDialog::getExistingDirectory(this,tr("Backup Save Directory"),dir.absolutePath());
+    QString directory = QFileDialog::getExistingDirectory(this,"Backup Save Directory",dir.absolutePath());
     if(!directory.isNull()) {
         ui->tbMySQLBackupLocation->setText(directory);
     }
+    modified = true;
 }
 
 /**********************************************************************
@@ -154,6 +180,7 @@ void MainWindow::on_cbRemoveSQLDumpFile_clicked() {
     if (ui->cbRemoveSQLDumpFile->isChecked() && !ui->cbCompressBackup->isChecked()) {
         QMessageBox::information(this,"Warning", "Checking this and not checking Compress Backup WILL result in your backup file being deleted!\nThis is designed to let you keep the original dump file and the compressed backup.",QMessageBox::Ok);
     }
+    modified = true;
 }
 
 /**********************************************************************
@@ -177,7 +204,13 @@ void MainWindow::on_actionSave_As_triggered() {
         }
     }
     //Get a filename and send it to the save config function
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save As File"), dir.absolutePath() + "/config", tr("conf (*.conf)"));
+    QString fileName;
+    if (ui->tbMySQLHostName->text() == "") {
+        fileName = QFileDialog::getSaveFileName(this, "Save As File", dir.absolutePath() + "/config", "conf (*.conf)");
+    }
+    else {
+        fileName = QFileDialog::getSaveFileName(this, "Save As File", dir.absolutePath() + "/config/" + ui->tbMySQLHostName->text() + ".conf", "conf (*.conf)");
+    }
     if(!fileName.isNull() && !fileName.isEmpty()) {
         if(SaveConfig(fileName)){
             statusLabelConfigName->setText(QFileInfo(fileName).fileName());
@@ -195,7 +228,7 @@ bool MainWindow::SaveConfig(QString fileName) {
         fileName += ".conf";
     }
     QFile file(fileName);
-    if (!file.open(QIODevice::WriteOnly)){
+    if (!file.open(QIODevice::WriteOnly)) {
         QMessageBox::critical(this,"Error","Unable to save the config file!");
         return false;
     }
@@ -213,7 +246,7 @@ bool MainWindow::SaveConfig(QString fileName) {
             if(ui->rbWindows->isChecked()) {
                 settings.setValue("configos","windows");
             }
-            else{
+            else {
                 settings.setValue("configos","linux");
             }
         settings.setValue("compressbackup", ui->cbCompressBackup->isChecked()?"true":"false" );
@@ -231,6 +264,7 @@ bool MainWindow::SaveConfig(QString fileName) {
         settings.setValue("mysqladditionaloptions", ui->tbAdditionalOptions->text());
         settings.setValue("backupsavelocation", ui->tbMySQLBackupLocation->text());
         settings.setValue("daystosave", ui->tbMySQLDaysToSave->text());
+        settings.setValue("mysqldumptimeout", ui->tbMySQLDumpTimeout->text());
     settings.endGroup();
     settings.beginGroup("databases");
         QString selected;
@@ -272,8 +306,8 @@ bool MainWindow::SaveConfig(QString fileName) {
     }
     else {
         QMessageBox::information(this,"File Saved","The config file was saved!");
-    }
-
+    }    
+    setLineEditsModified(false);
     return true;
 }
 
@@ -289,7 +323,7 @@ void MainWindow::on_actionOpen_triggered() {
         }
     }
     //Get a filename and send it to the save config function
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), dir.absolutePath() + "/config", tr("conf (*.conf)"));
+    QString fileName = QFileDialog::getOpenFileName(this, "Open File", dir.absolutePath() + "/config", "conf (*.conf)");
     if(!fileName.isNull() && !fileName.isEmpty()) {
         QFile file(fileName);
         if (!file.open(QFile::ReadOnly | QFile::Text)){
@@ -337,16 +371,19 @@ void MainWindow::on_actionOpen_triggered() {
         ui->tbMySQLDumpLocation->setText(settings.value("mysqldump/mysqldumplocation").toString());
         ui->tbMySQLDaysToSave->setText(settings.value("mysqldump/daystosave").toString());
         ui->tbAdditionalOptions->setText(settings.value("mysqldump/mysqladditionaloptions").toString());
+        ui->tbMySQLDumpTimeout->setText(settings.value("mysqldump/mysqldumptimeout").toString());
 
         ui->clbDatabases->clear();
-        QStringList selist = settings.value("databases/selected").toString().split(',');
-        for (int x = 0; x < selist.size(); ++x) {
-            ui->clbDatabases->addItem(selist.value(x));
+        QStringList list;
+        list = settings.value("databases/selected").toString().split(',');
+        for (int x = 0; x < list.size(); ++x) {
+            ui->clbDatabases->addItem(list.value(x));
             ui->clbDatabases->item(x)->setSelected(true);
         }
-        QStringList uslist = settings.value("databases/notselected").toString().split(',');
-        for (int x = 0; x < uslist.size(); ++x) {
-            ui->clbDatabases->addItem(uslist.value(x));
+        list.clear();
+        list = settings.value("databases/notselected").toString().split(',');
+        for (int x = 0; x < list.size(); ++x) {
+            ui->clbDatabases->addItem(list.value(x));
         }
         if(settings.value("smtpserver/sendmail") == "true") {
             ui->cbSendEmail->setChecked(true);
@@ -376,6 +413,7 @@ void MainWindow::on_actionOpen_triggered() {
         configFile = fileName;
         // Check and clear any unwanted error states
         errorProvider("all");
+        modified = false;
     }
 }
 
@@ -384,9 +422,9 @@ void MainWindow::on_actionOpen_triggered() {
 **********************************************************************/
 void MainWindow::on_actionNew_triggered() {
     QSysInfo info;
-    ui->actionSave->setEnabled(false);
+     ui->actionSave->setEnabled(false);
     statusLabelConfigName->setText("None");
-    configFile = "";
+    configFile.clear();
     ui->tbMySQLHostName->setText("");
     ui->tbMySQLPort->setText("3306");
     ui->tbMySQLUserName->setText("");
@@ -399,6 +437,7 @@ void MainWindow::on_actionNew_triggered() {
         ui->rbLinux->setChecked(true);
     }
     errorProvider("clear");
+    modified = false;
 }
 
 /**********************************************************************
@@ -424,6 +463,7 @@ void MainWindow::on_cbSendEmail_clicked() {
         ui->buTestMail->setEnabled(false);
         errorProvider("smtp");
     }
+    modified = true;
 }
 
 /**********************************************************************
@@ -488,11 +528,14 @@ void MainWindow::on_buTestConfig_clicked() {
            command.append(" --databases " + ui->clbDatabases->item(x)->text());
            command.append(" " + ui->tbAdditionalOptions->text());
            // Start the thread and wait for it to return
-           bt = QtConcurrent::run(backupThread, QString(command));
+           //qint16 timeout = QString::number(ui->tbMySQLDumpTimeout->text());
+          ui->buCancel->setEnabled(true);
+           bt = QtConcurrent::run(backupThread, QString(command), qint16(ui->tbMySQLDumpTimeout->text().toInt()*1000));
            while (bt.isRunning()) {
                // While we're waiting, keep proccessing events
               QApplication::processEvents();
            }
+           ui->buCancel->setEnabled(false);
            // Results and what to do next
             if(bt.result()==0) {
                 ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Table " + ui->clbDatabases->item(x)->text() + " dumped successfully");
@@ -534,7 +577,7 @@ void MainWindow::on_buTestConfig_clicked() {
                     }
                 }
                 // Move the .sql and the .zip file(if they exist)
-                QString destfile = "";
+                QString destfile;
                 if(QFile::exists("tmp/" + file_prepend + ui->clbDatabases->item(x)->text() + ".sql")) {
                     if(ui->cbUseDBDirs->isChecked()) {
                         destfile = ui->tbMySQLBackupLocation->text() + "/" + ui->clbDatabases->item(x)->text() + "/" + file_prepend + ui->clbDatabases->item(x)->text() + ".sql";
@@ -585,22 +628,22 @@ void MainWindow::on_buTestConfig_clicked() {
             }
         }
     }
+    ui->buCancel->setEnabled(false);
     ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " End backup");
     ui->lwOutput->addItem("Total Backup Time: " + QString::number(timer.elapsed()/1000) + " seconds.");
     statusProgressBar->setMaximum(1);
-
 }
 
 /**********************************************************************
     Backup Thread
 **********************************************************************/
-int MainWindow::backupThread(QString command) {
+int MainWindow::backupThread(QString command, qint16 timeout) {
     QProcess backup;
-    backup.start(command);
-    if(!backup.waitForStarted()) {
+     backup.start(command);
+    if(!backup.waitForStarted(timeout)) {
         return 1;
     }
-    if (!backup.waitForFinished()) {
+    if (!backup.waitForFinished(timeout)) {
         return 2;
     }
     QString p_stderr = backup.readAllStandardError();
@@ -612,8 +655,7 @@ int MainWindow::backupThread(QString command) {
             stream << p_stderr << endl;
         }
         return 3;
-    }
-    //backup
+    }    
 return 0;
 }
 
@@ -730,4 +772,75 @@ bool MainWindow::errorProvider(QString groupname) {
         line_edits[first]->setFocus();
     }
     return error;
+}
+
+/**********************************************************************
+    Set Line Edit Modified Flag
+**********************************************************************/
+void MainWindow::setLineEditsModified(bool flag) {
+    // Get a list of lineedits on the centralWidget
+    QList<QLineEdit*> line_edits = centralWidget()->findChildren<QLineEdit*>();
+    // Iterate through the list and set the modified property to the supplied value
+    for(int x = 0; x < line_edits.count(); ++x) {
+        line_edits[x]->setModified(flag);
+    }
+    modified = false;
+}
+
+/**********************************************************************
+    Set Line Edit Modified Flag
+**********************************************************************/
+bool MainWindow::detectChanges() {
+    // Get a list of lineedits on the centralWidget
+    QList<QLineEdit*> line_edits = centralWidget()->findChildren<QLineEdit*>();
+    // Iterate through the list and set the modified property to the supplied value
+    for(int x = 0; x < line_edits.count(); ++x) {
+        if (line_edits[x]->isModified()) {
+                return true;
+        }
+    }
+    if (modified) {
+        return true;
+    }
+    return false;
+}
+
+/**********************************************************************
+    Set Misc Modified Flags
+**********************************************************************/
+void MainWindow::on_rbWindows_toggled(bool checked) {
+    modified = true;
+}
+
+void MainWindow::on_rbLinux_toggled(bool checked) {
+    modified = true;
+}
+
+void MainWindow::on_rbSMTPNone_toggled(bool checked)
+{
+    modified = true;
+}
+
+void MainWindow::on_rbSMTPTLS_toggled(bool checked)
+{
+    modified = true;
+}
+
+void MainWindow::on_rbSMTPSSL_toggled(bool checked)
+{
+    modified = true;
+}
+
+void MainWindow::on_clbDatabases_itemClicked(QListWidgetItem *item) {
+    modified = true;
+}
+
+void MainWindow::on_cbCompressBackup_clicked()
+{
+    modified = true;
+}
+
+void MainWindow::on_cbUseDBDirs_clicked()
+{
+    modified = true;
 }

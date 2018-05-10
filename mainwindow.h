@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QByteArray>
+#include <QCloseEvent>
 #include <QCryptographicHash>
 #include <qtconcurrentrun.h>
 #include <QDate>
@@ -13,6 +14,7 @@
 #include <QFileDialog>
 #include <QFuture>
 #include <QLabel>
+#include <QListWidgetItem>
 #include <QMessageBox>
 #include <QProcess>
 #include <QProgressBar>
@@ -76,8 +78,30 @@ private slots:
 
     bool errorProvider(QString groupname);
 
-    static int backupThread(QString command);
+    void closeEvent (QCloseEvent *event);
 
+    void setLineEditsModified(bool flag);
+
+    bool detectChanges();
+
+    static int backupThread(QString command, qint16 timeout);
+
+
+    void on_rbWindows_toggled(bool checked);
+
+    void on_rbLinux_toggled(bool checked);
+
+    void on_clbDatabases_itemClicked(QListWidgetItem *item);
+
+    void on_cbCompressBackup_clicked();
+
+    void on_cbUseDBDirs_clicked();
+
+    void on_rbSMTPNone_toggled(bool checked);
+
+    void on_rbSMTPTLS_toggled(bool checked);
+
+    void on_rbSMTPSSL_toggled(bool checked);
 
 private:
     Ui::MainWindow *ui;
@@ -88,6 +112,8 @@ private:
     QProgressBar *statusProgressBar;
     // We use this to store our current config file in
     QString configFile;
+    // Options Modified
+    bool modified = false;
 
 };
 

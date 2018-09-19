@@ -76,7 +76,7 @@ private slots:
 
     void on_buTestMail_clicked();
 
-    bool errorProvider(QString groupname);
+    bool errorProvider(QString groupname, QString action);
 
     void closeEvent (QCloseEvent *event);
 

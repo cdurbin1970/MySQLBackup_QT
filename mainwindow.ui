@@ -36,6 +36,15 @@
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
       <widget class="QTabWidget" name="tabWidget">
+       <property name="styleSheet">
+        <string notr="true">QLineEdit, QPushButton, QListWidget{
+	border: 2px solid gray;
+	border-radius: 10px;
+	padding: 0 8px;
+	background: white;
+	selection-background-color: darkgray;
+}</string>
+       </property>
        <property name="currentIndex">
         <number>0</number>
        </property>
@@ -194,7 +203,7 @@
            <string>Enter the database server host name.</string>
           </property>
           <property name="autoFillBackground">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="frame">
            <bool>true</bool>
@@ -215,6 +224,9 @@
           <property name="toolTip">
            <string>Enter the database server user name.</string>
           </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
          </widget>
          <widget class="QLineEdit" name="tbMySQLPassword">
           <property name="geometry">
@@ -227,6 +239,9 @@
           </property>
           <property name="toolTip">
            <string>Enter the database server password.</string>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
           </property>
           <property name="echoMode">
            <enum>QLineEdit::Password</enum>
@@ -272,6 +287,9 @@
           </property>
           <property name="toolTip">
            <string>A list of the databases found on this server.</string>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
           </property>
           <property name="alternatingRowColors">
            <bool>true</bool>
@@ -337,6 +355,9 @@
           <property name="toolTip">
            <string>Where is the mysqldump location? Usually it is in /usr/bin on Linux.</string>
           </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
          </widget>
          <widget class="QLineEdit" name="tbMySQLBackupLocation">
           <property name="geometry">
@@ -349,6 +370,9 @@
           </property>
           <property name="toolTip">
            <string>Where should the backups be kept?</string>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>backups/</string>
@@ -365,6 +389,9 @@
           </property>
           <property name="toolTip">
            <string>How long should the backup be kept?</string>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>7</string>
@@ -465,6 +492,9 @@
             <width>51</width>
             <height>25</height>
            </rect>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>30</string>
@@ -586,6 +616,12 @@
             <height>31</height>
            </rect>
           </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
          </widget>
          <widget class="QLineEdit" name="tbSMTPServerPort">
           <property name="enabled">
@@ -598,6 +634,9 @@
             <width>41</width>
             <height>31</height>
            </rect>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>25</string>
@@ -615,6 +654,12 @@
             <height>31</height>
            </rect>
           </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
          </widget>
          <widget class="QLineEdit" name="tbSMTPPassword">
           <property name="enabled">
@@ -627,6 +672,12 @@
             <width>271</width>
             <height>31</height>
            </rect>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
           </property>
           <property name="echoMode">
            <enum>QLineEdit::Password</enum>
@@ -644,6 +695,12 @@
             <height>31</height>
            </rect>
           </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
           <property name="inputMask">
            <string/>
           </property>
@@ -659,6 +716,12 @@
             <width>271</width>
             <height>31</height>
            </rect>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
           </property>
          </widget>
          <widget class="QPushButton" name="buTestMail">
@@ -767,6 +830,9 @@
             <height>31</height>
            </rect>
           </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
          </widget>
         </widget>
         <widget class="QPushButton" name="buTestConfig">
@@ -790,6 +856,9 @@
            <width>551</width>
            <height>141</height>
           </rect>
+         </property>
+         <property name="autoFillBackground">
+          <bool>true</bool>
          </property>
         </widget>
         <widget class="QPushButton" name="buCancel">

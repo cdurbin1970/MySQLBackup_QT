@@ -81,7 +81,7 @@ MainWindow::~MainWindow() {
     Get Database Names
 **********************************************************************/
 void MainWindow::on_buGetDatabaseNames_clicked() {
-    if(errorProvider("mysql")) {
+    if(errorProvider("mysql","check")) {
         QMessageBox::critical(this, "Error", "Please enter the MySQL server information or Open a config file before clicking on Get Database Names.", QMessageBox::Ok);
         return;
     }
@@ -127,12 +127,12 @@ void MainWindow::on_cbSelectDatabases_clicked() {
 void MainWindow::on_actionQuit_triggered() {
     if(detectChanges()) {
         if(QMessageBox::question(this, "Exit Application", "You have unsaved chages, continue to exit?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
-                return;
+            return;
         }
     }
     else {
         if(QMessageBox::question(this, "Exit Application", "Exit MySQL Backup?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
-                return;
+            return;
         }
     }
     QApplication::quit();
@@ -141,12 +141,12 @@ void MainWindow::on_actionQuit_triggered() {
 void MainWindow::closeEvent(QCloseEvent *event) {
     if(detectChanges()) {
         if(QMessageBox::question(this, "Exit Application", "You have unsaved chages, continue to exit?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
-                event->ignore();
+            event->ignore();
         }
     }
     else {
         if(QMessageBox::question(this, "Exit Application", "Exit MySQL Backup?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
-                event->ignore();
+            event->ignore();
         }
     }
     event->accept();
@@ -156,9 +156,8 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     Find MySQL Dump
 **********************************************************************/
 void MainWindow::on_buMySQLDumpLocation_clicked() {
-
-  ui->tbMySQLDumpLocation->setText(QFileDialog::getOpenFileName(this,"Find mysqldump", "/usr/bin", "MySQL Dump (mysqldump)"));
-   ui->tbMySQLDumpLocation->setModified(true);
+    ui->tbMySQLDumpLocation->setText(QFileDialog::getOpenFileName(this,"Find mysqldump", "/usr/bin", "MySQL Dump (mysqldump)"));
+    ui->tbMySQLDumpLocation->setModified(true);
 }
 
 /**********************************************************************
@@ -301,7 +300,7 @@ bool MainWindow::SaveConfig(QString fileName) {
             settings.setValue("smtpsecurity", "ssl" );
         }
     settings.endGroup();
-    if (errorProvider("all")) {
+    if (errorProvider("all","check")) {
         QMessageBox::information(this,"File Saved","The config file was saved, but it was missing mandatory fields. This may cause issues when trying to run the configuration.");
     }
     else {
@@ -412,7 +411,7 @@ void MainWindow::on_actionOpen_triggered() {
         ui->actionSave->setEnabled(true);
         configFile = fileName;
         // Check and clear any unwanted error states
-        errorProvider("all");
+        errorProvider("all","clear");
         modified = false;
     }
 }
@@ -436,7 +435,7 @@ void MainWindow::on_actionNew_triggered() {
     else {
         ui->rbLinux->setChecked(true);
     }
-    errorProvider("clear");
+    errorProvider("all","clear");
     modified = false;
 }
 
@@ -446,6 +445,7 @@ void MainWindow::on_actionNew_triggered() {
 void MainWindow::on_cbSendEmail_clicked() {
     if(ui->cbSendEmail->isChecked()) {
         ui->tbSMTPServerName->setEnabled(true);
+        //ui->tbSMTPServerName->setStyleSheet("background-color: #f4b5b5;");
         ui->tbSMTPServerPort->setEnabled(true);
         ui->tbSMTPUserName->setEnabled(true);
         ui->tbSMTPPassword->setEnabled(true);
@@ -461,7 +461,7 @@ void MainWindow::on_cbSendEmail_clicked() {
         ui->tbSMTPEMailAddress->setEnabled(false);
         ui->tbSMTPFromAddress->setEnabled(false);
         ui->buTestMail->setEnabled(false);
-        errorProvider("smtp");
+        errorProvider("smtp","clear");
     }
     modified = true;
 }
@@ -478,7 +478,7 @@ void MainWindow::on_actionAbout_triggered() {
 **********************************************************************/
 void MainWindow::on_buTestConfig_clicked() {
     // Check all required linedits
-    if(errorProvider("all")){
+    if(errorProvider("all","check")){
         QMessageBox::critical(this, "Error", "Please enter the required information or Open a config file before clicking on Test Configuration.", QMessageBox::Ok);
         return;
     }
@@ -664,13 +664,13 @@ return 0;
 **********************************************************************/
 void MainWindow::on_buTestMail_clicked() {
     // Check all required linedits
-    if(errorProvider("smtp")){
+    if(errorProvider("smtp","check")){
         QMessageBox::critical(this, "Error", "Please enter the required information or Open a config file before clicking on Test E-Mail.", QMessageBox::Ok);
         return;
     }    
     try {
         CSmtp mail;
-        mail.SetSMTPServer(ui->tbSMTPServerName->text().toUtf8(),ui->tbSMTPServerPort->text().toShort());
+        mail.SetSMTPServer(ui->tbSMTPServerName->text().toUtf8(),ui->tbSMTPServerPort->text().toUShort());
         if (!ui->tbSMTPUserName->text().isEmpty() && !ui->tbSMTPUserName->text().isNull()) {
             mail.SetLogin(ui->tbSMTPUserName->text().toUtf8());
         }
@@ -715,7 +715,7 @@ QMessageBox::information(this,"SMTP Send","Mail was send successfully.");
 /**********************************************************************
     Error Provider
 **********************************************************************/
-bool MainWindow::errorProvider(QString groupname) {
+bool MainWindow::errorProvider(QString groupname, QString action = "") {
     QString str;
     int first = 9999;
     bool error = false;
@@ -724,16 +724,16 @@ bool MainWindow::errorProvider(QString groupname) {
     // Iterate through the list and check to see if the mandatory property is the same as the groupname that is sent.
     // If so, change the stylesheet, display the icon.
     for(int x = 0; x < line_edits.count(); ++x) {
-        if (groupname == "clear" && line_edits[x]->property("HasError") == true) {
+        if (action == "clear" && line_edits[x]->property("HasError") == true) {
             line_edits[x]->setStyleSheet("");
             // Delete the error symbol from the form
             centralWidget()->findChild<QLabel *>(line_edits[x]->property("ErrorWidget").toString())->deleteLater();
             line_edits[x]->setProperty("HasError",false);
         }
-        else if(line_edits[x]->isEnabled() && line_edits[x]->property("mandatory").isValid() && (line_edits[x]->property("mandatory") == groupname || groupname == "all")) {
+        else if(line_edits[x]->isEnabled() && line_edits[x]->property("mandatory").isValid() && (line_edits[x]->property("mandatory") == groupname || groupname == "all") && (action == "check")) {
             if(line_edits[x]->text() == "" || line_edits[x]->text().isNull()) {
                 if(line_edits[x]->property("HasError") == false || line_edits[x]->property("HasError").isNull()) {
-                    line_edits[x]->setStyleSheet("color: #FF0000;");
+                    line_edits[x]->setStyleSheet("background-color: #f4b5b5;");
                     QPixmap image(":/mysqlbackup_qt/icons/Icons/exclamation-red-icon.png");
                     QLabel *errorLabel = new QLabel();
                     errorLabel->setObjectName(line_edits[x]->objectName() + "_errorlabel");
@@ -796,7 +796,7 @@ bool MainWindow::detectChanges() {
     // Iterate through the list and set the modified property to the supplied value
     for(int x = 0; x < line_edits.count(); ++x) {
         if (line_edits[x]->isModified()) {
-                return true;
+            return true;
         }
     }
     if (modified) {
@@ -816,18 +816,15 @@ void MainWindow::on_rbLinux_toggled(bool checked) {
     modified = true;
 }
 
-void MainWindow::on_rbSMTPNone_toggled(bool checked)
-{
+void MainWindow::on_rbSMTPNone_toggled(bool checked) {
     modified = true;
 }
 
-void MainWindow::on_rbSMTPTLS_toggled(bool checked)
-{
+void MainWindow::on_rbSMTPTLS_toggled(bool checked) {
     modified = true;
 }
 
-void MainWindow::on_rbSMTPSSL_toggled(bool checked)
-{
+void MainWindow::on_rbSMTPSSL_toggled(bool checked) {
     modified = true;
 }
 
@@ -835,12 +832,10 @@ void MainWindow::on_clbDatabases_itemClicked(QListWidgetItem *item) {
     modified = true;
 }
 
-void MainWindow::on_cbCompressBackup_clicked()
-{
+void MainWindow::on_cbCompressBackup_clicked() {
     modified = true;
 }
 
-void MainWindow::on_cbUseDBDirs_clicked()
-{
+void MainWindow::on_cbUseDBDirs_clicked() {
     modified = true;
 }

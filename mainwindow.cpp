@@ -513,17 +513,26 @@ void MainWindow::on_buTestConfig_clicked() {
     QString command;
     QString file_prepend = QDateTime::currentDateTime().toString("yyyy_MM_dd_HH_mm_ss_");
     statusProgressBar->setMaximum(0);
-    ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Begin backup");    
+    ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " Begin backup");
+    // Create a username/password file to use in the tmp directory
+    QString sqlpasswordfilename="tmp/.sqlpasswd";
+    QFile sqlpassword(sqlpasswordfilename);
+    if ( sqlpassword.open(QIODevice::ReadWrite) ) {
+        QTextStream stream( &sqlpassword );
+        stream << "[mysqldump]" << endl << "user=" + ui->tbMySQLUserName->text() << endl << "password=" + ui->tbMySQLPassword->text() << endl;
+    }
+    sqlpassword.close();
     // Iterate through each item in the clbDatabases list box and see if it is  selected.
     for (int x=0;x < ui->clbDatabases->count(); ++x) {
         if (ui->clbDatabases->item(x)->isSelected()) {
            // It is selected
            command.clear();
            command = ui->tbMySQLDumpLocation->text();
+           command.append(" --defaults-extra-file=tmp/.sqlpasswd");
            command.append(" --host=" + ui->tbMySQLHostName->text());
            command.append(" --port=" + ui->tbMySQLPort->text());
-           command.append(" --user=" + ui->tbMySQLUserName->text());
-           command.append(" --password=" + ui->tbMySQLPassword->text());
+           //command.append(" --user=" + ui->tbMySQLUserName->text());
+           //command.append(" --password=" + ui->tbMySQLPassword->text());
            command.append(" --result-file=tmp/" + file_prepend + ui->clbDatabases->item(x)->text() + ".sql");
            command.append(" --databases " + ui->clbDatabases->item(x)->text());
            command.append(" " + ui->tbAdditionalOptions->text());
@@ -628,6 +637,8 @@ void MainWindow::on_buTestConfig_clicked() {
             }
         }
     }
+    // Remove the temp password file
+    sqlpassword.remove();
     ui->buCancel->setEnabled(false);
     ui->lwOutput->addItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + " End backup");
     ui->lwOutput->addItem("Total Backup Time: " + QString::number(timer.elapsed()/1000) + " seconds.");

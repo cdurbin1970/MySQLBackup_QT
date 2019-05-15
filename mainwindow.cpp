@@ -850,3 +850,30 @@ void MainWindow::on_cbCompressBackup_clicked() {
 void MainWindow::on_cbUseDBDirs_clicked() {
     modified = true;
 }
+
+/**********************************************************************
+
+                    Restore Database Sections
+
+**********************************************************************/
+
+/**********************************************************************
+    Select MySQL location
+**********************************************************************/
+void MainWindow::on_buMySQLLocation_clicked() {
+    ui->tbMySQLLocation->setText(QFileDialog::getOpenFileName(this,"Find mysql", "/usr/bin", "MySQL (mysql)"));
+}
+
+/**********************************************************************
+    Select Backup File
+**********************************************************************/
+void MainWindow::on_buFileLocation_clicked() {
+    ui->tbFileLocation->setText(QFileDialog::getOpenFileName(this,"Select Backup File", "backups/","All files (*.*);;ZIP (*.zip);;SQL Files (*.sql)" ));
+}
+
+/**********************************************************************
+    Restore The Database
+**********************************************************************/
+void MainWindow::on_buRestoreDatabase_clicked() {
+
+}

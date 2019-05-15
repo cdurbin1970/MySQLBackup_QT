@@ -103,6 +103,13 @@ private slots:
 
     void on_rbSMTPSSL_toggled(bool checked);
 
+
+    void on_buMySQLLocation_clicked();
+
+    void on_buFileLocation_clicked();
+
+    void on_buRestoreDatabase_clicked();
+
 private:
     Ui::MainWindow *ui;
     QLabel *statusLabelOS;

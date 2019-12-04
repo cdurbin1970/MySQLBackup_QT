@@ -16,6 +16,14 @@
     <height>711</height>
    </size>
   </property>
+  <property name="font">
+   <font>
+    <family>Verdana</family>
+    <weight>50</weight>
+    <italic>false</italic>
+    <bold>false</bold>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>MySQL Backup v.</string>
   </property>
@@ -36,19 +44,38 @@
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
       <widget class="QTabWidget" name="tabWidget">
+       <property name="font">
+        <font>
+         <family>Verdana</family>
+         <pointsize>10</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
        <property name="styleSheet">
-        <string notr="true">QLineEdit, QPushButton, QListWidget{
-	border: 2px solid gray;
-	border-radius: 10px;
+        <string notr="true">font: 10pt &quot;Verdana&quot;;
+QLineEdit, QPushButton, QListWidget{
+	border: 1px solid gray;
+	border-radius: 5px;
 	padding: 0 8px;
 	background: white;
-	selection-background-color: darkgray;
+	selection-background-color: darkgray;	
 }</string>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab">
+        <property name="font">
+         <font>
+          <family>Verdana</family>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
         <attribute name="title">
          <string>Backup</string>
         </attribute>
@@ -60,6 +87,15 @@
            <width>601</width>
            <height>561</height>
           </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Verdana</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
          </property>
          <property name="title">
           <string>MySQL Server Information</string>
@@ -79,6 +115,15 @@
             <height>17</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Host Name:</string>
           </property>
@@ -91,6 +136,15 @@
             <width>71</width>
             <height>17</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
            <string>Username:</string>
@@ -105,6 +159,15 @@
             <height>17</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Password:</string>
           </property>
@@ -117,6 +180,15 @@
             <width>31</width>
             <height>17</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
            <string>Port:</string>
@@ -131,6 +203,15 @@
             <height>17</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Databases:</string>
           </property>
@@ -143,6 +224,15 @@
             <width>69</width>
             <height>17</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
            <string>Config OS:</string>
@@ -157,6 +247,15 @@
             <height>17</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>MySQL Dump Location:</string>
           </property>
@@ -170,6 +269,15 @@
             <height>17</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Backup Save Location:</string>
           </property>
@@ -182,6 +290,15 @@
             <width>94</width>
             <height>17</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
            <string>Days To Keep:</string>
@@ -198,6 +315,15 @@
             <width>321</width>
             <height>31</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="toolTip">
            <string>Enter the database server host name.</string>
@@ -220,6 +346,15 @@
             <width>321</width>
             <height>31</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="toolTip">
            <string>Enter the database server user name.</string>
@@ -256,6 +391,15 @@
             <height>31</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="toolTip">
            <string>Enter the database server port number. Usually this is 3306.</string>
           </property>
@@ -272,6 +416,15 @@
             <height>21</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Select All Databases</string>
           </property>
@@ -284,6 +437,15 @@
             <width>256</width>
             <height>131</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="toolTip">
            <string>A list of the databases found on this server.</string>
@@ -310,6 +472,15 @@
             <height>33</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="toolTip">
            <string>Get the names of the databases on this server.</string>
           </property>
@@ -326,6 +497,15 @@
             <height>21</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Wi&amp;ndows</string>
           </property>
@@ -339,6 +519,15 @@
             <height>21</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Linu&amp;x</string>
           </property>
@@ -351,6 +540,15 @@
             <width>351</width>
             <height>31</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="toolTip">
            <string>Where is the mysqldump location? Usually it is in /usr/bin on Linux.</string>
@@ -367,6 +565,15 @@
             <width>351</width>
             <height>31</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="toolTip">
            <string>Where should the backups be kept?</string>
@@ -387,6 +594,15 @@
             <height>31</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="toolTip">
            <string>How long should the backup be kept?</string>
           </property>
@@ -406,6 +622,15 @@
             <height>33</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>...</string>
           </property>
@@ -419,6 +644,15 @@
             <height>33</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>...</string>
           </property>
@@ -431,6 +665,15 @@
             <width>141</width>
             <height>21</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="toolTip">
            <string>Should the backup be compressed?</string>
@@ -448,6 +691,15 @@
             <height>21</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="toolTip">
            <string>Should the SQL dump file be removed after the backup? This is used in conjunction with Compress Backup. </string>
           </property>
@@ -463,6 +715,15 @@
             <width>101</width>
             <height>21</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="toolTip">
            <string>Should backups be stored in directories which are named after the databases?</string>
@@ -480,6 +741,15 @@
             <height>17</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>MySQL Dump Timeout (secs):</string>
           </property>
@@ -492,6 +762,15 @@
             <width>51</width>
             <height>25</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="autoFillBackground">
            <bool>false</bool>
@@ -510,6 +789,15 @@
            <height>321</height>
           </rect>
          </property>
+         <property name="font">
+          <font>
+           <family>Verdana</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
          <property name="title">
           <string>E-Mail Server Information</string>
          </property>
@@ -521,6 +809,15 @@
             <width>111</width>
             <height>21</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
            <string>Send E-Mail</string>
@@ -535,6 +832,15 @@
             <height>17</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Server Name:</string>
           </property>
@@ -547,6 +853,15 @@
             <width>31</width>
             <height>17</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
            <string>Port:</string>
@@ -561,6 +876,15 @@
             <height>17</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Username:</string>
           </property>
@@ -573,6 +897,15 @@
             <width>66</width>
             <height>17</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
            <string>Password:</string>
@@ -587,6 +920,15 @@
             <height>17</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>E-Mail Address:</string>
           </property>
@@ -599,6 +941,15 @@
             <width>95</width>
             <height>17</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
            <string>From Address:</string>
@@ -615,6 +966,15 @@
             <width>271</width>
             <height>31</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="autoFillBackground">
            <bool>false</bool>
@@ -635,6 +995,15 @@
             <height>31</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="autoFillBackground">
            <bool>false</bool>
           </property>
@@ -654,6 +1023,15 @@
             <height>31</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="autoFillBackground">
            <bool>false</bool>
           </property>
@@ -672,6 +1050,15 @@
             <width>271</width>
             <height>31</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="autoFillBackground">
            <bool>false</bool>
@@ -695,6 +1082,15 @@
             <height>31</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="autoFillBackground">
            <bool>false</bool>
           </property>
@@ -717,6 +1113,15 @@
             <height>31</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="autoFillBackground">
            <bool>false</bool>
           </property>
@@ -736,6 +1141,15 @@
             <height>33</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Test E-Mail</string>
           </property>
@@ -749,6 +1163,15 @@
             <height>17</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>SMTP Security Type</string>
           </property>
@@ -761,6 +1184,15 @@
             <width>71</width>
             <height>21</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
            <string>None</string>
@@ -778,6 +1210,15 @@
             <height>21</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>TLS</string>
           </property>
@@ -790,6 +1231,15 @@
             <width>61</width>
             <height>21</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
            <string>SSL</string>
@@ -805,6 +1255,15 @@
            <height>81</height>
           </rect>
          </property>
+         <property name="font">
+          <font>
+           <family>Verdana</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
          <property name="title">
           <string>MySQL Dump Options</string>
          </property>
@@ -816,6 +1275,15 @@
             <width>231</width>
             <height>17</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
            <string>Additional Command Line Options</string>
@@ -830,8 +1298,23 @@
             <height>31</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>Extra options for the MySQLDump command</string>
+          </property>
           <property name="autoFillBackground">
            <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>--opt --single-transaction --add-drop-database --column-statistics=0</string>
           </property>
          </widget>
         </widget>
@@ -844,8 +1327,17 @@
            <height>33</height>
           </rect>
          </property>
+         <property name="font">
+          <font>
+           <family>Verdana</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
          <property name="text">
-          <string>Test Configuration</string>
+          <string>Execute Configuration</string>
          </property>
         </widget>
         <widget class="QListWidget" name="lwOutput">
@@ -856,6 +1348,15 @@
            <width>551</width>
            <height>141</height>
           </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Verdana</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
          </property>
          <property name="autoFillBackground">
           <bool>true</bool>
@@ -872,6 +1373,15 @@
            <width>111</width>
            <height>31</height>
           </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Verdana</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
          </property>
          <property name="text">
           <string>Cancel</string>
@@ -894,6 +1404,15 @@
            <height>561</height>
           </rect>
          </property>
+         <property name="font">
+          <font>
+           <family>Verdana</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
          <property name="title">
           <string>MySQL Server Information</string>
          </property>
@@ -912,6 +1431,15 @@
             <height>17</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Host Name:</string>
           </property>
@@ -924,6 +1452,15 @@
             <width>71</width>
             <height>17</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
            <string>Username:</string>
@@ -938,6 +1475,15 @@
             <height>17</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Password:</string>
           </property>
@@ -951,6 +1497,15 @@
             <height>17</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Port:</string>
           </property>
@@ -959,10 +1514,19 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>160</y>
+            <y>220</y>
             <width>111</width>
             <height>17</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
            <string>MySQL Location:</string>
@@ -979,6 +1543,15 @@
             <width>321</width>
             <height>31</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="toolTip">
            <string>Enter the database server host name.</string>
@@ -1002,6 +1575,15 @@
             <height>31</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="toolTip">
            <string>Enter the database server user name.</string>
           </property>
@@ -1017,6 +1599,15 @@
             <width>321</width>
             <height>31</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="toolTip">
            <string>Enter the database server password.</string>
@@ -1037,6 +1628,15 @@
             <height>31</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="toolTip">
            <string>Enter the database server port number. Usually this is 3306.</string>
           </property>
@@ -1048,10 +1648,19 @@
           <property name="geometry">
            <rect>
             <x>120</x>
-            <y>160</y>
+            <y>220</y>
             <width>351</width>
             <height>31</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="toolTip">
            <string>Where is the mysql location? Usually it is in /usr/bin on Linux.</string>
@@ -1063,11 +1672,20 @@
          <widget class="QPushButton" name="buMySQLLocation">
           <property name="geometry">
            <rect>
-            <x>480</x>
-            <y>160</y>
+            <x>500</x>
+            <y>220</y>
             <width>31</width>
             <height>33</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
            <string>...</string>
@@ -1077,10 +1695,19 @@
           <property name="geometry">
            <rect>
             <x>120</x>
-            <y>200</y>
+            <y>260</y>
             <width>351</width>
             <height>31</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="toolTip">
            <string>Where is the backup file?</string>
@@ -1092,11 +1719,20 @@
          <widget class="QPushButton" name="buFileLocation">
           <property name="geometry">
            <rect>
-            <x>480</x>
-            <y>200</y>
+            <x>500</x>
+            <y>260</y>
             <width>31</width>
             <height>33</height>
            </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
           </property>
           <property name="text">
            <string>...</string>
@@ -1106,13 +1742,84 @@
           <property name="geometry">
            <rect>
             <x>40</x>
-            <y>200</y>
+            <y>260</y>
             <width>81</width>
             <height>17</height>
            </rect>
           </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>Backup File:</string>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="cbCreateDatabase">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>90</x>
+            <y>150</y>
+            <width>141</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Create Database</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="tbDatabaseName">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>94</x>
+            <y>170</y>
+            <width>321</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Verdana</family>
+            <pointsize>10</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>Enter the database name.</string>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="echoMode">
+           <enum>QLineEdit::Normal</enum>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>false</bool>
           </property>
          </widget>
         </widget>
@@ -1124,6 +1831,15 @@
            <width>161</width>
            <height>33</height>
           </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Verdana</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
          </property>
          <property name="text">
           <string>Restore Database</string>
@@ -1141,7 +1857,7 @@
      <x>0</x>
      <y>0</y>
      <width>1170</width>
-     <height>29</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

@@ -15,10 +15,7 @@
 */
 
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
-{
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
     // create objects for the labels and progress bar
@@ -60,7 +57,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tbMySQLPort->setProperty("mandatory","mysql");
     ui->tbMySQLUserName->setProperty("mandatory","mysql");
     ui->tbMySQLPassword->setProperty("mandatory","mysql");
-
     ui->tbMySQLDumpLocation->setProperty("mandatory","mysqldump");
     ui->tbMySQLBackupLocation->setProperty("mandatory","mysqldump");
     ui->tbMySQLDaysToSave->setProperty("mandatory","mysqldump");
@@ -71,10 +67,48 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->tbSMTPPassword->setProperty("mandatory","smtp");
     ui->tbSMTPEMailAddress->setProperty("mandatory","smtp");
     ui->tbSMTPFromAddress->setProperty("mandatory","smtp");
+
+    ui->tbMySQLHostName_Restore->setProperty("mandatory","restore");
+    ui->tbMySQLPort_Restore->setProperty("mandatory","restore");
+    ui->tbMySQLUserName_Restore->setProperty("mandatory","restore");
+    ui->tbMySQLPassword_Restore->setProperty("mandatory","restore");
+    ui->tbMySQLLocation->setProperty("mandatory","restore");
+    ui->tbFileLocation->setProperty("mandatory","restore");
 }
 
 MainWindow::~MainWindow() {
     delete ui;
+}
+
+/**********************************************************************
+    Exit the Application
+**********************************************************************/
+void MainWindow::on_actionQuit_triggered() {
+    if(detectChanges()) {
+        if(QMessageBox::question(this, "Exit Application", "You have unsaved chages, continue to exit?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
+            return;
+        }
+    }
+    else {
+        if(QMessageBox::question(this, "Exit Application", "Exit MySQL Backup?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
+            return;
+        }
+    }
+    QApplication::quit();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    if(detectChanges()) {
+        if(QMessageBox::question(this, "Exit Application", "You have unsaved chages, continue to exit?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
+            event->ignore();
+        }
+    }
+    else {
+        if(QMessageBox::question(this, "Exit Application", "Exit MySQL Backup?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
+            event->ignore();
+        }
+    }
+    event->accept();
 }
 
 /**********************************************************************
@@ -119,37 +153,6 @@ void MainWindow::on_cbSelectDatabases_clicked() {
         ui->clbDatabases->clearSelection();
     }
     modified = true;
-}
-
-/**********************************************************************
-    Exit the Application
-**********************************************************************/
-void MainWindow::on_actionQuit_triggered() {
-    if(detectChanges()) {
-        if(QMessageBox::question(this, "Exit Application", "You have unsaved chages, continue to exit?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
-            return;
-        }
-    }
-    else {
-        if(QMessageBox::question(this, "Exit Application", "Exit MySQL Backup?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
-            return;
-        }
-    }
-    QApplication::quit();
-}
-
-void MainWindow::closeEvent(QCloseEvent *event) {
-    if(detectChanges()) {
-        if(QMessageBox::question(this, "Exit Application", "You have unsaved chages, continue to exit?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
-            event->ignore();
-        }
-    }
-    else {
-        if(QMessageBox::question(this, "Exit Application", "Exit MySQL Backup?", QMessageBox::Yes|QMessageBox::No) == QMessageBox::No) {
-            event->ignore();
-        }
-    }
-    event->accept();
 }
 
 /**********************************************************************
@@ -300,9 +303,15 @@ bool MainWindow::SaveConfig(QString fileName) {
             settings.setValue("smtpsecurity", "ssl" );
         }
     settings.endGroup();
-    if (errorProvider("all","check")) {
+    if (errorProvider("mysql","check")) {
         QMessageBox::information(this,"File Saved","The config file was saved, but it was missing mandatory fields. This may cause issues when trying to run the configuration.");
     }
+    else if (errorProvider("mysqldump","check")) {
+        QMessageBox::information(this,"File Saved","The config file was saved, but it was missing mandatory fields. This may cause issues when trying to run the configuration.");
+    }
+    else if (errorProvider("smtp","check")) {
+            QMessageBox::information(this,"File Saved","The config file was saved, but it was missing mandatory fields. This may cause issues when trying to run the configuration.");
+        }
     else {
         QMessageBox::information(this,"File Saved","The config file was saved!");
     }    
@@ -478,8 +487,12 @@ void MainWindow::on_actionAbout_triggered() {
 **********************************************************************/
 void MainWindow::on_buTestConfig_clicked() {
     // Check all required linedits
-    if(errorProvider("all","check")){
-        QMessageBox::critical(this, "Error", "Please enter the required information or Open a config file before clicking on Test Configuration.", QMessageBox::Ok);
+    if(errorProvider("mysql","check")){
+        QMessageBox::critical(this, "Error", "Please enter the required information or Open a config file before clicking on Execute Configuration.", QMessageBox::Ok);
+        return;
+    }
+    if(errorProvider("mysqldump","check")){
+        QMessageBox::critical(this, "Error", "Please enter the required information or Open a config file before clicking on Execute Configuration.", QMessageBox::Ok);
         return;
     }
     //Try to find the default tmp directory. If not create one.
@@ -659,7 +672,7 @@ int MainWindow::backupThread(QString command, qint16 timeout) {
     }
     QString p_stderr = backup.readAllStandardError();
     if (p_stderr != "") {
-        QString filename="backup_error.log";
+        QString filename="logs/backup_error.log";
         QFile file(filename);
         if ( file.open(QIODevice::ReadWrite) ) {
             QTextStream stream(&file);
@@ -853,7 +866,7 @@ void MainWindow::on_cbUseDBDirs_clicked() {
 
 /**********************************************************************
 
-                    Restore Database Sections
+                    Restore Database Functions
 
 **********************************************************************/
 
@@ -875,5 +888,25 @@ void MainWindow::on_buFileLocation_clicked() {
     Restore The Database
 **********************************************************************/
 void MainWindow::on_buRestoreDatabase_clicked() {
+    // Check all required linedits
+    if(errorProvider("restore","check")){
+        QMessageBox::critical(this, "Error", "Please enter the required information before clicking on Restore Database.", QMessageBox::Ok);
+        return;
+    }
+    if(ui->tbFileLocation->text().right(4) != ".zip" || ui->tbFileLocation->text().right(4) != ".sql") {
+        QMessageBox::critical(this, "Error", "Unknown file extension.", QMessageBox::Ok);
+        return;
+    }
+}
 
+/**********************************************************************
+    Create a database
+**********************************************************************/
+void MainWindow::on_cbCreateDatabase_clicked() {
+    if(ui->cbCreateDatabase->isChecked()) {
+        ui->tbDatabaseName->setEnabled(true);
+    }
+    else {
+        ui->tbDatabaseName->setEnabled(false);
+    }
 }

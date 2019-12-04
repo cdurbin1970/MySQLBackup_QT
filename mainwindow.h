@@ -30,7 +30,8 @@
 
 #include "libraries/simplecrypt/simplecrypt.h"
 #include "libraries/smtp/CSmtp.h"
-#include <quazip5/JlCompress.h>
+//#include <quazip5/JlCompress.h>
+#include "libraries/quazip/JlCompress.h"
 
 namespace Ui {
 class MainWindow;
@@ -41,7 +42,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
@@ -86,7 +87,6 @@ private slots:
 
     static int backupThread(QString command, qint16 timeout);
 
-
     void on_rbWindows_toggled(bool checked);
 
     void on_rbLinux_toggled(bool checked);
@@ -103,12 +103,13 @@ private slots:
 
     void on_rbSMTPSSL_toggled(bool checked);
 
-
     void on_buMySQLLocation_clicked();
 
     void on_buFileLocation_clicked();
 
     void on_buRestoreDatabase_clicked();
+
+    void on_cbCreateDatabase_clicked();
 
 private:
     Ui::MainWindow *ui;
